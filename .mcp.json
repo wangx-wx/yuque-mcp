@@ -1,0 +1,13 @@
+{
+  "mcpServers": {
+    "yuque": {
+      "command": "node",
+      "args": ["./dist/index.js"],
+      "env": {
+        "YUQUE_AUTH_TOKEN": "",
+        "YUQUE_BASE_URL": "https://api.yuque.com",
+        "YUQUE_BOOK_ID": ""
+      }
+    }
+  }
+}
