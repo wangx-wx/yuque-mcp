@@ -8,7 +8,6 @@ import { ResponseTransformer, type DocDetailToolResponse } from '../models/respo
 
 // Tool schema
 export const getDocSchema = z.object({
-  book_id: z.number().describe('Knowledge base (repository) ID'),
   doc_id: z.number().describe('Document ID'),
 });
 
@@ -16,13 +15,12 @@ export const getDocSchema = z.object({
 export function registerGetDocTool(server: any) {
   server.tool(
     'get_doc',
-    'Get detailed content of a specific Yuque document by doc_id',
+    'Get the full content of a specific document by its ID. Use this when you have the document ID and need to read the complete document content.',
     getDocSchema.shape,
     async (args: z.infer<typeof getDocSchema>) => {
       try {
         const client = new YuqueApiClient();
         const apiResponse = await client.getDoc({
-          // book_id: args.book_id,
           doc_id: args.doc_id,
         });
 

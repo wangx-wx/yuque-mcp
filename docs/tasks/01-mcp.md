@@ -14,8 +14,8 @@
 # Actions
 1. 你先调研E:\python\yuque-api项目
 2. 规划如何实现相关mcp
-3. 使用skill-creator完成具体开发
+3. 使用`mcp-builder`完成具体开发
 4. 我们需要讨论设计和实现的细节
 5. 生成README文件
 
-使用skill-creator完成
+使用`mcp-builder`完成

@@ -63,7 +63,6 @@ export interface DocumentDetail {
 }
 
 export interface GetDocRequest {
-  // book_id: number;
   doc_id: number;
 }
 
@@ -85,3 +84,54 @@ export interface V2Doc {
   description: string;
   book_id: number;
 }
+
+// ============ TOC Types ============
+
+export interface V2TocItem {
+  uuid: string;
+  type: 'DOC' | 'LINK' | 'TITLE';
+  title: string;
+  url?: string;
+  slug?: string;
+  id?: number;
+  doc_id?: number;
+  level?: number;
+  depth?: number;
+  open_window?: 0 | 1;
+  visible?: 0 | 1;
+  prev_uuid?: string;
+  sibling_uuid?: string;
+  child_uuid?: string;
+  parent_uuid?: string;
+}
+
+export interface TocResponse {
+  data: V2TocItem[];
+}
+
+// ============ Create Doc Types ============
+
+export interface CreateDocRequest {
+  slug?: string;
+  title: string;
+  public?: number;
+  format?: 'markdown' | 'lake' | 'html';
+  body?: string;
+}
+
+export type CreateDocResponse = DocumentDetail;
+
+export interface UpdateTocRequest {
+  action: 'appendNode' | 'prependNode' | 'editNode' | 'removeNode';
+  action_mode?: 'sibling' | 'child';
+  target_uuid?: string;
+  node_uuid?: string;
+  doc_ids?: number[];
+  type?: 'DOC' | 'LINK' | 'TITLE';
+  title?: string;
+  url?: string;
+  open_window?: number;
+  visible?: 0 | 1;
+}
+
+export type UpdateTocResponse = V2TocItem;

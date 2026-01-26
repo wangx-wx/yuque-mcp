@@ -15,7 +15,7 @@ export const searchSchema = z.object({
 export function registerSearchTool(server: any) {
   server.tool(
     'search',
-    'Search for documents in Yuque (语雀). Use this tool to find documents by keywords.',
+    'Search documents by keyword in Yuque knowledge base. Use this when user wants to find specific documents or content. Returns matching documents with titles and summaries.',
     searchSchema.shape,
     async (args: z.infer<typeof searchSchema>) => {
       try {

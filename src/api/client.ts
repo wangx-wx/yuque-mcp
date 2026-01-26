@@ -9,6 +9,7 @@ export interface RequestOptions {
   method?: 'GET' | 'POST' | 'PUT' | 'DELETE';
   headers?: Record<string, string>;
   params?: Record<string, string | number>;
+  body?: unknown;
   unwrapData?: boolean;  // 是否自动解包 data 字段
 }
 
@@ -18,7 +19,7 @@ export class HttpClient {
 
   constructor() {
     const config = loadEnvConfig();
-    this.baseUrl = config.baseUrl;
+    this.baseUrl = "https://api.yuque.com";
     this.authToken = config.authToken;
   }
 
@@ -39,21 +40,29 @@ export class HttpClient {
    * Make HTTP request with error handling
    */
   async request<T>(endpoint: string, options: RequestOptions = {}): Promise<T> {
-    const { method = 'GET', params, unwrapData = false } = options;
+    const { method = 'GET', params, body, unwrapData = false } = options;
 
     const url = this.buildUrl(endpoint, params);
 
     const headers: Record<string, string> = {
-      'Content-Type': 'application/json',
       'X-Auth-Token': this.authToken,
       ...options.headers,
     };
 
+    const fetchOptions: RequestInit = {
+      method,
+      headers,
+    };
+
+    if (body !== undefined && (method === 'POST' || method === 'PUT')) {
+      fetchOptions.body = JSON.stringify(body);
+      if (!headers['Content-Type']) {
+        headers['Content-Type'] = 'application/json';
+      }
+    }
+
     try {
-      const response = await fetch(url, {
-        method,
-        headers,
-      });
+      const response = await fetch(url, fetchOptions);
 
       if (!response.ok) {
         const errorData: ApiError = await response.json().catch(() => ({ message: 'Unknown error' }));
@@ -81,5 +90,19 @@ export class HttpClient {
    */
   async get<T>(endpoint: string, params?: Record<string, string | number>, unwrapData?: boolean): Promise<T> {
     return this.request<T>(endpoint, { method: 'GET', params, unwrapData });
+  }
+
+  /**
+   * POST request
+   */
+  async post<T>(endpoint: string, body?: unknown, unwrapData?: boolean): Promise<T> {
+    return this.request<T>(endpoint, { method: 'POST', body, unwrapData });
+  }
+
+  /**
+   * PUT request
+   */
+  async put<T>(endpoint: string, body: unknown, unwrapData?: boolean): Promise<T> {
+    return this.request<T>(endpoint, { method: 'PUT', body, unwrapData });
   }
 }

@@ -5,7 +5,8 @@
 export interface EnvConfig {
   authToken: string;
   baseUrl: string;
-  bookId?: number;
+  bookSlug: string;
+  groupLogin: string;
 }
 
 /**
@@ -23,10 +24,10 @@ function getEnvVar(name: string): string {
  * Load and validate environment configuration
  */
 export function loadEnvConfig(): EnvConfig {
-  const bookIdStr = process.env.YUQUE_BOOK_ID;
   return {
     authToken: getEnvVar('YUQUE_AUTH_TOKEN'),
-    baseUrl: process.env.YUQUE_BASE_URL || 'https://api.yuque.com',
-    bookId: bookIdStr ? parseInt(bookIdStr, 10) : undefined,
+    baseUrl: getEnvVar('YUQUE_BASE_URL'),
+    groupLogin: getEnvVar('YUQUE_GROUP_LOGIN'),
+    bookSlug: getEnvVar('YUQUE_BOOK_SLUG'),
   };
 }

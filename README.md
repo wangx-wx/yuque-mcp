@@ -1,11 +1,13 @@
 # Yuque MCP Server
 
-语雀（Yuque）文档 Model Context Protocol (MCP) 服务器，提供文档搜索和内容获取功能。
+语雀（Yuque）文档 Model Context Protocol (MCP) 服务器，提供文档搜索、目录浏览、内容获取和文档创建功能。
 
 ## 功能
 
 - **search**: 搜索语雀文档
 - **get_doc**: 获取文档详细内容
+- **get_toc**: 获取知识库目录结构
+- **create_doc**: 创建新文档
 
 ## 安装
 
@@ -13,24 +15,12 @@
 npm install
 ```
 
-## 配置
-
-创建 `.env` 文件或设置环境变量：
-
-```bash
-YUQUE_AUTH_TOKEN=your-auth-token-here
-YUQUE_BASE_URL=https://api.yuque.com
-```
-
-### 获取 Auth Token
-
-1. 登录 [语雀](https://yuque.com)
-2. 进入 **设置** > **Token** > **新建 Token**
-3. 复制生成的 Token
-
 ## 构建
 
 ```bash
+git clone https://github.com/wangx-wx/yuque-mcp.git
+cd yuque-mcp
+npm install
 npm run build
 ```
 
@@ -54,7 +44,9 @@ npm run build
       "args": ["E:\\node\\yuque-mcp\\dist\\index.js"],
       "env": {
         "YUQUE_AUTH_TOKEN": "your-auth-token-here",
-        "YUQUE_BASE_URL": "https://api.yuque.com"
+        "YUQUE_BASE_URL": "https://www.yuque.com",
+        "YUQUE_GROUP_LOGIN": "your-group-login",
+        "YUQUE_BOOK_SLUG": "your-book-slug"
       }
     }
   }
@@ -72,15 +64,27 @@ npm run build
 | 参数 | 类型 | 必填 | 说明 |
 |------|------|------|------|
 | q | string | 是 | 搜索关键词 |
-| type | string | 是 | 搜索类型：`doc`（文档）或 `repo`（知识库） |
-| page | number | 否 | 页码，默认 1 |
-| scope | string | 否 | 搜索范围 |
-| creator | string | 否 | 按作者 login 筛选 |
+
+**使用场景：** 用户想查找特定内容的文档
 
 **示例：**
-
 ```
 搜索关键词 "TypeScript" 的文档
+```
+
+### get_toc
+
+获取知识库目录结构。
+
+**参数：** 无（从环境变量读取知识库配置）
+
+**使用场景：** 用户想浏览目录或导航文件夹结构
+
+**返回：** 扁平化的目录项列表，包含 uuid 和 title
+
+**示例：**
+```
+查看知识库的目录结构
 ```
 
 ### get_doc
@@ -91,13 +95,35 @@ npm run build
 
 | 参数 | 类型 | 必填 | 说明 |
 |------|------|------|------|
-| book_id | number | 是 | 知识库 ID |
 | doc_id | number | 是 | 文档 ID |
 
-**示例：**
+**使用场景：** 已有文档 ID，需要读取完整文档内容
 
+**示例：**
 ```
-获取知识库 123 中文档 456 的内容
+获取文档 123456 的详细内容
+```
+
+### create_doc
+
+创建新文档并添加到目录结构中。
+
+**参数：**
+
+| 参数 | 类型 | 必填 | 说明 |
+|------|------|------|------|
+| title | string | 是 | 文档标题 |
+| content | string | 是 | 文档内容（Markdown 格式） |
+| target_uuid | string | 否 | 目标节点 UUID（通过 get_toc 获取）。不填则添加到根节点 |
+| action_mode | string | 否 | 插入模式：`child`（子级，默认）或 `sibling`（同级） |
+
+**使用场景：** 用户想创建新文档
+
+**返回：** 文档 ID、标题和访问 URL
+
+**示例：**
+```
+创建标题为 "部署指南" 的文档，内容为 "# 部署\n\n..."
 ```
 
 ## 项目结构
@@ -108,34 +134,21 @@ yuque-mcp/
 │   ├── config/
 │   │   └── env.ts          # 环境变量配置
 │   ├── models/
-│   │   └── types.ts        # TypeScript 类型定义
+│   │   ├── types.ts        # TypeScript 类型定义
+│   │   └── responses.ts    # 响应转换器
 │   ├── api/
 │   │   ├── client.ts       # HTTP 客户端
 │   │   └── yuque-api.ts    # 语雀 API 封装
 │   ├── tools/
 │   │   ├── search.ts       # search 工具实现
-│   │   └── get-doc.ts      # get_doc 工具实现
+│   │   ├── get-doc.ts      # get_doc 工具实现
+│   │   ├── get-toc.ts      # get_toc 工具实现
+│   │   └── create-doc.ts   # create_doc 工具实现
 │   ├── server.ts           # MCP 服务器配置
 │   └── index.ts            # 入口文件
 ├── package.json
 ├── tsconfig.json
 └── README.md
-```
-
-## 开发
-
-```bash
-# 安装依赖
-npm install
-
-# 开发模式（监听文件变化）
-npm run dev
-
-# 构建
-npm run build
-
-# 运行
-npm start
 ```
 
 ## 使用示例
@@ -146,24 +159,32 @@ npm start
 帮我搜索关于 "TypeScript" 的语雀文档
 ```
 
-### 获取文档内容
+### 浏览目录
 
 ```
-获取知识库 123 中文档 456 的详细内容
+查看知识库的目录结构
 ```
 
-## 故障排查
 
-### 环境变量未设置
-如果看到 `Missing required environment variable: YUQUE_AUTH_TOKEN`，请确保：
-1. 已创建 `.env` 文件
-2. 或在 Claude Desktop 配置中设置了 `env` 字段
+### 创建文档
 
-### API 认证失败
-检查：
-1. Token 是否正确
-2. Token 是否有足够权限
-3. 网络连接是否正常
+```
+创建一个新文档，标题是 "部署指南"，内容如下：
+# 部署指南
+
+## 环境准备
+- Node.js 18+
+- MySQL 8.0
+
+## 部署步骤
+...
+```
+
+### 组合使用
+
+```
+先查看目录，找到 "技术文档" 分类的 uuid，然后在该分类下创建一个新文档
+```
 
 ## 许可证
 
