@@ -24,8 +24,12 @@ export function registerGetTocTool(server: any) {
 
         return {
           content: [{
-            type: 'text',
-            text: JSON.stringify(response, null, 2),
+            type: 'resource',
+            resource: {
+              uri: 'yuque://toc',
+              mimeType: 'application/json',
+              text: JSON.stringify(response),
+            },
           }],
         };
       } catch (error) {
