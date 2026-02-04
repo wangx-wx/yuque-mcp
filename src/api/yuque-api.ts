@@ -12,6 +12,8 @@ import type {
   SearchRequest,
   SearchResponse,
   TocResponse,
+  UpdateDocRequest,
+  UpdateDocResponse,
   UpdateTocRequest,
   UpdateTocResponse,
 } from '../models/types.js';
@@ -75,5 +77,15 @@ export class YuqueApiClient {
   async updateToc(request: UpdateTocRequest): Promise<UpdateTocResponse> {
     const endpoint = `/api/v2/repos/${this.config.groupLogin}/${this.config.bookSlug}/toc`;
     return this.client.put<UpdateTocResponse>(endpoint, request, true);
+  }
+
+  /**
+   * Update document
+   * API: PUT /api/v2/repos/:group_login/:book_slug/docs/:id
+   */
+  async updateDoc(request: UpdateDocRequest): Promise<UpdateDocResponse> {
+    const { doc_id, ...body } = request;
+    const endpoint = `/api/v2/repos/${this.config.groupLogin}/${this.config.bookSlug}/docs/${doc_id}`;
+    return this.client.put<UpdateDocResponse>(endpoint, body, true);
   }
 }

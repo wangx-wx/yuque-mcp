@@ -3,11 +3,11 @@
  */
 
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
-import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
-import { registerSearchTool } from './tools/search.js';
+import { registerCreateDocTool } from './tools/create-doc.js';
 import { registerGetDocTool } from './tools/get-doc.js';
 import { registerGetTocTool } from './tools/get-toc.js';
-import { registerCreateDocTool } from './tools/create-doc.js';
+import { registerSearchTool } from './tools/search.js';
+import { registerUpdateDocTool } from './tools/update-doc.js';
 
 /**
  * Create and configure MCP server
@@ -23,6 +23,7 @@ export function createMCPServer(): McpServer {
   registerGetDocTool(server);
   registerGetTocTool(server);
   registerCreateDocTool(server);
+  registerUpdateDocTool(server);
 
   return server;
 }

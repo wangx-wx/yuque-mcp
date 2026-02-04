@@ -8,6 +8,7 @@
 - **get_doc**: 获取文档详细内容
 - **get_toc**: 获取知识库目录结构
 - **create_doc**: 创建新文档
+- **update_doc**: 更新现有文档
 
 ## 安装
 
@@ -53,6 +54,29 @@ npm run build
 }
 ```
 
+
+### CLI 配置
+```sh
+claude mcp add yuque-mcp-asd \
+		--scope project \
+		--transport stdio \
+		-- node "/path/yuque-mcp/dist/index.js" \
+		--env YUQUE_AUTH_TOKEN=your-auth-token-here \
+		--env YUQUE_BASE_URL=https://www.leyaoyao.yuque.com \
+		--env YUQUE_GROUP_LOGIN=your-group-login \
+		--env YUQUE_BOOK_SLUG=your-book-slug
+```
+
+```powershell
+claude mcp add yuque-mcp-asd `
+		--scope project `
+		--transport stdio `
+		-- node "D:/yuque-mcp/dist/index.js" `
+		--env YUQUE_AUTH_TOKEN=your-auth-token-here `
+		--env YUQUE_BASE_URL=https://www.leyaoyao.yuque.com `
+		--env YUQUE_GROUP_LOGIN=your-group-login `
+		--env YUQUE_BOOK_SLUG=your-book-slug
+```
 ## 工具说明
 
 ### search
@@ -126,6 +150,28 @@ npm run build
 创建标题为 "部署指南" 的文档，内容为 "# 部署\n\n..."
 ```
 
+### update_doc
+
+更新现有文档的标题、内容或路径。
+
+**参数：**
+
+| 参数 | 类型 | 必填 | 说明 |
+|------|------|------|------|
+| doc_id | string | 是 | 文档 ID 或路径 |
+| title | string | 否 | 新文档标题 |
+| content | string | 否 | 文档内容（Markdown 格式）|
+| slug | string | 否 | 新文档路径 |
+
+**使用场景：** 修改已有文档的内容或标题
+
+**返回：** 文档 ID、标题、路径、访问 URL 和更新时间
+
+**示例：**
+```
+更新文档 abc123，将标题改为 "新标题"，内容改为 "# 新内容"
+```
+
 ## 项目结构
 
 ```
@@ -143,7 +189,8 @@ yuque-mcp/
 │   │   ├── search.ts       # search 工具实现
 │   │   ├── get-doc.ts      # get_doc 工具实现
 │   │   ├── get-toc.ts      # get_toc 工具实现
-│   │   └── create-doc.ts   # create_doc 工具实现
+│   │   ├── create-doc.ts   # create_doc 工具实现
+│   │   └── update-doc.ts   # update_doc 工具实现
 │   ├── server.ts           # MCP 服务器配置
 │   └── index.ts            # 入口文件
 ├── package.json
@@ -178,6 +225,12 @@ yuque-mcp/
 
 ## 部署步骤
 ...
+```
+
+### 更新文档
+
+```
+更新文档 123456，标题改为 "部署指南 v2"，内容添加 "## 更新日志\n\n- 2024-01-01: 初始版本"
 ```
 
 ### 组合使用

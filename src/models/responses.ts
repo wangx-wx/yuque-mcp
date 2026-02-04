@@ -11,7 +11,6 @@ import {loadEnvConfig} from '../config/env.js';
  */
 export interface SearchResultItem {
   doc_id: number;
-  book_id: number;
   title: string;
   summary: string;
 }
@@ -21,8 +20,6 @@ export interface SearchResultItem {
  */
 export interface SearchToolResponse {
   results: SearchResultItem[];
-  total: number;
-  page: number;
 }
 
 /**
@@ -30,11 +27,11 @@ export interface SearchToolResponse {
  */
 export interface DocDetailToolResponse {
   doc_id: number;
-  book_id: number;
   title: string;
   body: string;
   slug: string;
   format: string;
+  url: string;
   created_at: string;
   updated_at: string;
 }
@@ -64,6 +61,15 @@ export interface CreateDocToolResponse {
 }
 
 /**
+ * 更新文档工具响应
+ */
+export interface UpdateDocToolResponse {
+  doc_id: number;
+  title: string;
+  url: string;
+}
+
+/**
  * 转换器 - 将 API 响应转换为工具响应
  */
 export class ResponseTransformer {
@@ -75,7 +81,6 @@ export class ResponseTransformer {
 
     return {
       doc_id: data.target.id,
-      book_id: data.target.book_id,
       title: data.title,
       summary: data.summary || '',
     };
@@ -87,8 +92,6 @@ export class ResponseTransformer {
   static transformSearch(response: SearchResponse): SearchToolResponse {
     return {
       results: response.data.map(item => this.transformSearchItem(item)),
-      total: response.total,
-      page: response.page_no,
     };
   }
 
@@ -96,10 +99,11 @@ export class ResponseTransformer {
    * 转换文档详情响应
    */
   static transformDocDetail(detail: DocumentDetail): DocDetailToolResponse {
+    const config = loadEnvConfig();
     return {
       doc_id: detail.id,
-      book_id: detail.book_id,
       title: detail.title,
+      url: `${config.baseUrl}/${config.groupLogin}/${config.bookSlug}/${detail.slug}`,
       body: detail.body,
       slug: detail.slug,
       format: detail.format,
@@ -129,6 +133,18 @@ export class ResponseTransformer {
       doc_id: createResponse.id,
       title: title,
       url: `${config.baseUrl}/${config.groupLogin}/${config.bookSlug}/${createResponse.slug}`,
+    };
+  }
+
+  /**
+   * 转换更新文档响应
+   */
+  static transformUpdateDoc(updateResponse: DocumentDetail): UpdateDocToolResponse {
+    const config = loadEnvConfig();
+    return {
+      doc_id: updateResponse.id,
+      title: updateResponse.title,
+      url: `${config.baseUrl}/${config.groupLogin}/${config.bookSlug}/${updateResponse.slug}`,
     };
   }
 }

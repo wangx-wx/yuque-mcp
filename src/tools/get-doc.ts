@@ -8,7 +8,7 @@ import { ResponseTransformer, type DocDetailToolResponse } from '../models/respo
 
 // Tool schema
 export const getDocSchema = z.object({
-  doc_id: z.number().describe('Document ID'),
+  doc_id: z.number().describe('Document ID, Get this value from the search tool.'),
 });
 
 // Tool registration function
@@ -28,8 +28,12 @@ export function registerGetDocTool(server: any) {
 
         return {
           content: [{
-            type: 'text',
-            text: JSON.stringify(response, null, 2),
+            type: 'resource',
+            resource: {
+              uri: 'yuque://doc',
+              mimeType: 'application/json',
+              text: JSON.stringify(response),
+            },
           }],
         };
       } catch (error) {

@@ -135,3 +135,16 @@ export interface UpdateTocRequest {
 }
 
 export type UpdateTocResponse = V2TocItem;
+
+// ============ Update Doc Types ============
+
+export interface UpdateDocRequest {
+  doc_id: string;
+  slug?: string;
+  title?: string;
+  public: 0 | 1 | 2;
+  format: 'markdown' | 'lake' | 'html';
+  body?: string;
+}
+
+export type UpdateDocResponse = DocumentDetail;
